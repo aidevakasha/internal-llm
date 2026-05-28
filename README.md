@@ -5,7 +5,7 @@
 - Open WebUI as the main chat and RAG interface
 - Qdrant as the vector database
 - Apache Tika for document parsing
-- A bridge to an Ollama instance running on the host machine
+- Optional connectivity to an Ollama instance running on the host machine
 
 ## Architecture
 
@@ -20,23 +20,57 @@ The diagram shows the broader intended topology around Open WebUI, including hos
 | Open WebUI | <http://localhost:3000> | Chat UI, RAG, agents, and document workflows |
 | Qdrant | <http://localhost:6333> | Vector storage for embeddings and retrieval |
 | Apache Tika | <http://localhost:9998> | Document extraction and text parsing |
-| Ollama on host | <http://host.docker.internal:11434> | Local model server used by Open WebUI |
+| Ollama on host (optional) | <http://host.docker.internal:11434> | Local model server used by Open WebUI when available |
 
 ## Prerequisites
 
 - Docker and Docker Compose
-- An Ollama instance running on your host machine
+- Optional: an Ollama instance running on your host machine if you want local Ollama models
 
 ## Setup
 
-1. Start Ollama on your host and make sure it listens on port `11434`.
+1. (Optional) Start Ollama on your host and make sure it listens on port `11434`.
 2. Start the stack:
 
 ```bash
 docker compose up -d
 ```
 
-1. Open Open WebUI at <http://localhost:3000>.
+3. Open Open WebUI at <http://localhost:3000>.
+
+If Ollama is not running, Open WebUI still starts and you can use non-Ollama providers/configurations.
+
+## Docker Compose lifecycle
+
+Start all services in the background:
+
+```bash
+docker compose up -d
+```
+
+Stop running containers without removing them:
+
+```bash
+docker compose stop
+```
+
+Start again after `stop`:
+
+```bash
+docker compose start
+```
+
+Stop and remove containers (keep named volumes):
+
+```bash
+docker compose down
+```
+
+Stop and remove containers and named volumes:
+
+```bash
+docker compose down -v
+```
 
 ## Configuration
 
