@@ -1,0 +1,53 @@
+services:
+  # --- Open WebUI Frontend/Backend ---
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    ports:
+      - "3000:8080"
+    volumes:
+      - open-webui-data:/app/backend/data
+    environment:
+      - WEBUI_NAME=AI Workspace
+      - ENABLE_OLLAMA_API=True
+      
+      # 1. Point this out of the container to your actual computer
+      - OLLAMA_BASE_URLS=http://host.docker.internal:11434
+
+      # Vector DB Configuration (Qdrant)
+      - VECTOR_DB=qdrant
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - QDRANT_URI=http://qdrant:6333
+      # Apache Tika Configuration for Document Parsing
+      - TIKA_SERVER_URL=http://tika:9998
+    restart: unless-stopped
+    depends_on:
+      - qdrant
+      - tika
+      
+    # 2. CRUCIAL BRIDGE: This tells the container how to find your computer's IP
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # --- Vector Database (Qdrant) ---
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    restart: unless-stopped
+
+  # --- Apache Tika (Document Parsing) ---
+  tika:
+    image: apache/tika:latest
+    container_name: tika
+    ports:
+      - "9998:9998"
+    restart: unless-stopped
+
+volumes:
+  open-webui-data:
+  qdrant-data:
